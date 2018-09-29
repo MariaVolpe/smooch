@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Mocha Tests</title>
+    <link href="https://unpkg.com/mocha@5.2.0/mocha.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="mocha"></div>
+
+    <script src="https://unpkg.com/chai/chai.js"></script>
+    <script src="https://unpkg.com/mocha@5.2.0/mocha.js"></script>
+    <script src="setdata.js"></script>
+    <script src="doll.js"></script>
+
+    <script>mocha.setup('bdd')</script>
+
+    <script>
+     chai.should();
+
+     describe("objIdToColor", function () {
+         it("should generate a color from an object id", function () {
+             objIdToColor(34).should.equal({red: 34, alpha: 255});
+         });
+     });
+
+     describe("colorToKey", function () {
+         it("should turn a color into a valid key", function () {
+             var color = objIdToColor(34);
+             colorToKey(color).should.not.be.NaN;
+         });
+     });
+    </script>
+    <script>
+     mocha.checkLeaks();
+     mocha.run();
+    </script>
+  </body>
+</html>

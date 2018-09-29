@@ -49,6 +49,39 @@ var KissSet = function(kissData) {
     return this;
 };
 
+
+// create a unique color for each obj based on the obj id
+// and register it in the global colorids array
+// supports up to 765 objects
+var objIdToColor = function (i) {
+    var color = {};
+
+    // red will increase while blue and green remain 0
+    if (i < 255){
+        color.red = i;
+    }
+    // green will increase while red and blue remain 0
+    else if ((i > 255) && (i < 255*2)){
+        color.red = 0;
+        color.green += 1;
+    }
+    // blue will increase while red and green remain 0
+    else if ((i > 255*2) && (i < 255*3)){
+        color.green = 0;
+        color.blue += 1;
+    }
+
+    color.alpha = 255;
+
+    return color;
+};
+
+// returns a unique value for that color that can be
+// used as a key in the color map
+var colorToKey = function (color) {
+    return color.red + color.green + color.blue + 255;
+};
+
 KissSet.prototype = {
     init: function (objs, cels) {
         /* Cels have to be kept in a separate list from the objects.
@@ -65,41 +98,16 @@ KissSet.prototype = {
             return unmatched && name_matches && pal_matches;
         };
 
-
         /* Go through each KiSS object, add information from the object to the
-           cells within the object, then add those cells to the list. */
-
-        // supports up to 765 objects
-
-        var red = 0;
-        var green = 0;
-        var blue = 0;
-
+           cels within the object, then add those cels to the list. */
         for (var i = 0; i < objs.length; i++) {
             var objid = objs[i].id;
 
-            // create a unique color for each obj based on the obj id
-            // and register it in the global colorids array
-            
-            // red will increase while blue and green remain 0
-            if (i < 255){
-                red = i;
-            }
-            // green will increase while red and blue remain 0
-            else if ((i > 255) && (i < 255*2)){
-                red = 0;
-                green += 1;
-            }
-            // blue will increase while red and green remain 0
-            else if ((i > 255*2) && (i < 255*3)){
-                green = 0;
-                blue += 1;
-            }
-            
-            var colorid = red + green + blue + 255;
+            var color = objIdToColor(objid);
+
+            var colorid = colorToKey(color);
             colorids[colorid] = i;
-            objs[i].color = { red: red, green: green, blue: blue, alpha: 255 };
-            
+            objs[i].color = colorid;
 
             // now lets go through the cels
             var obj_cells = objs[i].cells;
@@ -398,8 +406,18 @@ var Mouser = function(that) {
 
 window.addEventListener('load', function() {
     var kissData = kissJson;
-    this.smooch = new Smooch(kissData);
-    var blah = 0;
+
+    /* TODO: figure out a better way to allow the tests
+       to work without the whole set being initialized */
+    var playarea = document.getElementById("playarea");
+
+    if (playarea) {
+        this.smooch = new Smooch(kissData);
+    } else {
+        console.log("This page doesn't contain a set.");
+    }
+    /* end hack (at least this particular one) */
+
     var checkLoaded = function () {
         if (loaded < kissData.cels.length) {
             console.log("loading...");
