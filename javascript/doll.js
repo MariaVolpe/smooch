@@ -76,6 +76,11 @@ var objIdToColor = function (i) {
     return color;
 };
 
+// returns a unique value for that color that can be
+// used as a key in the color map
+var colorToKey = function (color) {
+    return color.red + color.green + color.blue + 255;
+};
 
 KissSet.prototype = {
     init: function (objs, cels) {
@@ -100,9 +105,9 @@ KissSet.prototype = {
 
             var color = objIdToColor(objid);
 
-            var colorid = color.red + color.green + color.blue + 255;
+            var colorid = colorToKey(color);
             colorids[colorid] = i;
-            objs[i].color = color;
+            objs[i].color = colorToKey(color);
 
             // now lets go through the cels
             var obj_cells = objs[i].cells;
