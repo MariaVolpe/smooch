@@ -49,6 +49,34 @@ var KissSet = function(kissData) {
     return this;
 };
 
+
+// create a unique color for each obj based on the obj id
+// and register it in the global colorids array
+// supports up to 765 objects
+var objIdToColor = function (i) {
+    var color = {};
+
+    // red will increase while blue and green remain 0
+    if (i < 255){
+        color.red = i;
+    }
+    // green will increase while red and blue remain 0
+    else if ((i > 255) && (i < 255*2)){
+        color.red = 0;
+        color.green += 1;
+    }
+    // blue will increase while red and green remain 0
+    else if ((i > 255*2) && (i < 255*3)){
+        color.green = 0;
+        color.blue += 1;
+    }
+
+    color.alpha = 255;
+
+    return color;
+};
+
+
 KissSet.prototype = {
     init: function (objs, cels) {
         /* Cels have to be kept in a separate list from the objects.
@@ -65,41 +93,16 @@ KissSet.prototype = {
             return unmatched && name_matches && pal_matches;
         };
 
-
         /* Go through each KiSS object, add information from the object to the
-           cells within the object, then add those cells to the list. */
-
-        // supports up to 765 objects
-
-        var red = 0;
-        var green = 0;
-        var blue = 0;
-
+           cels within the object, then add those cels to the list. */
         for (var i = 0; i < objs.length; i++) {
             var objid = objs[i].id;
 
-            // create a unique color for each obj based on the obj id
-            // and register it in the global colorids array
-            
-            // red will increase while blue and green remain 0
-            if (i < 255){
-                red = i;
-            }
-            // green will increase while red and blue remain 0
-            else if ((i > 255) && (i < 255*2)){
-                red = 0;
-                green += 1;
-            }
-            // blue will increase while red and green remain 0
-            else if ((i > 255*2) && (i < 255*3)){
-                green = 0;
-                blue += 1;
-            }
-            
-            var colorid = red + green + blue + 255;
+            var color = objIdToColor(objid);
+
+            var colorid = color.red + color.green + color.blue + 255;
             colorids[colorid] = i;
-            objs[i].color = { red: red, green: green, blue: blue, alpha: 255 };
-            
+            objs[i].color = color;
 
             // now lets go through the cels
             var obj_cells = objs[i].cells;
