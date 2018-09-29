@@ -406,8 +406,18 @@ var Mouser = function(that) {
 
 window.addEventListener('load', function() {
     var kissData = kissJson;
-    this.smooch = new Smooch(kissData);
-    var blah = 0;
+
+    /* TODO: figure out a better way to allow the tests
+       to work without the whole set being initialized */
+    var playarea = document.getElementById("playarea");
+
+    if (playarea) {
+        this.smooch = new Smooch(kissData);
+    } else {
+        console.log("This page doesn't contain a set.");
+    }
+    /* end hack (at least this particular one) */
+
     var checkLoaded = function () {
         if (loaded < kissData.cels.length) {
             console.log("loading...");
