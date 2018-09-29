@@ -107,7 +107,7 @@ KissSet.prototype = {
 
             var colorid = colorToKey(color);
             colorids[colorid] = i;
-            objs[i].color = colorToKey(color);
+            objs[i].color = colorid;
 
             // now lets go through the cels
             var obj_cells = objs[i].cells;
